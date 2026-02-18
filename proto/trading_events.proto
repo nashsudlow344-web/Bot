@@ -1,0 +1,126 @@
+syntax = "proto3";
+package trading.v1;
+
+message Instrument {
+  string symbol = 1;
+  string exchange = 2;
+  string isin = 3;
+  int32 tick_size_decimals = 4; // number of decimals, e.g., 2 => cents
+  int64 lot_size = 5;
+  string currency = 6;
+}
+
+message MarketTick {
+  string source_id = 1;
+  string symbol = 2;
+  int64 seq_no = 3;
+  int64 ts_ms = 4;
+  int64 recv_ts_ms = 5;
+  int64 price_ticks = 6;
+  int64 size = 7;
+  string venue = 8;
+}
+
+message OHLCVBar {
+  string symbol = 1;
+  int64 start_ts_ms = 2;
+  int64 end_ts_ms = 3;
+  int64 open_ticks = 4;
+  int64 high_ticks = 5;
+  int64 low_ticks = 6;
+  int64 close_ticks = 7;
+  int64 volume = 8;
+  int64 vwap_ticks = 9;
+  string source = 10;
+}
+
+message OrderBookLevel {
+  int32 level = 1;
+  int64 bid_price_ticks = 2;
+  int64 bid_size = 3;
+  int64 ask_price_ticks = 4;
+  int64 ask_size = 5;
+}
+
+message OrderBookSnapshot {
+  string symbol = 1;
+  int64 ts_ms = 2;
+  int64 recv_ts_ms = 3;
+  repeated OrderBookLevel levels = 4;
+  string source = 5;
+  int64 seq_no = 6;
+}
+
+message FeatureSnapshot {
+  string symbol = 1;
+  int64 as_of_ts_ms = 2;
+  int64 computed_at_ms = 3;
+  int64 uses_up_to_ts_ms = 4;
+  map<string, string> features = 5;
+  string version = 6;
+  string provenance = 7;
+}
+
+message DisplaySignal {
+  string id = 1;
+  string symbol = 2;
+  string side = 3;
+  int64 generated_ts_ms = 4;
+  int64 entry_price_ticks = 5;
+  int64 stop_price_ticks = 6;
+  repeated int64 target_price_ticks = 7;
+  double rr = 8;
+  int32 confidence_pct = 9;
+  string explanation_short = 10;
+  string explanation_long = 11;
+  string model_version = 12;
+  string signal_type = 13;
+  string source = 14;
+  int64 ttl_ms = 15;
+  map<string, string> debug = 16;
+}
+
+message Article {
+  string id = 1;
+  string source = 2;
+  int64 published_ts_ms = 3;
+  int64 ingested_ts_ms = 4;
+  string title = 5;
+  string url = 6;
+  string body = 7;
+  repeated string symbols = 8;
+  string raw_payload = 9;
+}
+
+message ArticleAnalysis {
+  string article_id = 1;
+  int64 analysis_ts_ms = 2;
+  double sentiment_score = 3;
+  double relevance_score = 4;
+  string summary = 5;
+  repeated string entities = 6;
+  repeated string tags = 7;
+  string model_version = 8;
+}
+
+message WatchSummary {
+  string watch_id = 1;
+  string user_id = 2;
+  string symbol = 3;
+  int64 created_ts_ms = 4;
+  int64 last_updated_ts_ms = 5;
+  int64 current_price_ticks = 6;
+  int32 current_confidence_pct = 7;
+  double aggregated_sentiment = 8;
+  repeated string recent_headlines = 9;
+  string status = 10;
+  map<string, string> meta = 11;
+}
+
+message AuditRecord {
+  string id = 1;
+  string event_type = 2;
+  int64 ts_ms = 3;
+  string payload_json = 4;
+  string user_id = 5;
+}

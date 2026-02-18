@@ -1,0 +1,23 @@
+syntax = "proto3";
+package trading.v1;
+
+message FusionContribution {
+  string horizon = 1;
+  string signal_id = 2;
+  int32 confidence_pct = 3;
+  double weight = 4;
+  double weighted_score = 5;
+  repeated string rationale = 6;
+}
+
+message FusionTrace {
+  string fusion_id = 1;
+  string symbol = 2;
+  int64 created_ts_ms = 3;
+  repeated FusionContribution contributions = 4;
+  double composite_score = 5;
+  string resolution = 6;
+  string dominant_horizon = 7;
+  string fusion_plan_version = 8;
+  string debug_json = 9;
+}

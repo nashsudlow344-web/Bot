@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.local/schemas/generate_display_signal.schema.json",
+  "title": "GenerateDisplaySignal",
+  "description": "Schema for a display trading signal produced by Codex or internal model.",
+  "type": "object",
+  "required": ["id", "symbol", "side", "generated_ts_ms", "entry_price_ticks", "stop_price_ticks", "confidence_pct", "signal_type"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-f0-9\\-]{8,64}$", "description": "Stable or deterministic id (sha256 prefix allowed)." },
+    "symbol": { "type": "string", "minLength": 1, "description": "Instrument symbol (exchange qualified preferred), e.g. 'AAPL.US' or 'CBA.ASX'." },
+    "side": { "type": "string", "enum": ["LONG", "SHORT"], "description": "Directional side." },
+    "generated_ts_ms": { "type": "integer", "minimum": 0, "description": "UTC epoch milliseconds when the signal was generated (no future timestamps)." },
+    "entry_price_ticks": { "type": "integer", "minimum": 1, "description": "Entry price in integer ticks (no decimals)." },
+    "stop_price_ticks": { "type": "integer", "minimum": 1, "description": "Stop price in integer ticks." },
+    "target_price_ticks": { "type": "array", "items": { "type": "integer", "minimum": 1 }, "minItems": 0, "maxItems": 5 },
+    "rr": { "type": "number", "minimum": 0, "description": "Reward-to-risk (target distance / stop distance)." },
+    "confidence_pct": { "type": "integer", "minimum": 0, "maximum": 100, "description": "Calibrated confidence percentage (0-100)." },
+    "explanation_short": { "type": "string", "maxLength": 240 },
+    "explanation_long": { "type": "string", "maxLength": 2000 },
+    "model_version": { "type": "string" },
+    "signal_type": { "type": "string", "enum": ["SCALP", "DAY", "SWING", "OTHER"] },
+    "source": { "type": "string" },
+    "ttl_ms": { "type": "integer", "minimum": 0 },
+    "debug": { "type": "object", "additionalProperties": true }
+  },
+  "examples": [
+    {
+      "id": "82ff9c47ae103735f6aed8ea",
+      "symbol": "CBA.ASX",
+      "side": "LONG",
+      "generated_ts_ms": 1700000060000,
+      "entry_price_ticks": 113420,
+      "stop_price_ticks": 113410,
+      "target_price_ticks": [113460, 113500],
+      "rr": 2.0,
+      "confidence_pct": 62,
+      "explanation_short": "day breakout with volume expansion",
+      "signal_type": "DAY",
+      "model_version": "day_v1",
+      "source": "codex",
+      "ttl_ms": 3600000
+    }
+  ]
+}

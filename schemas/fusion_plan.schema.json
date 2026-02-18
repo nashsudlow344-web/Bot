@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.local/schemas/fusion_plan.schema.json",
+  "title": "FusionPlan",
+  "description": "Fusion plan configuration used by the fusion engine to combine horizon contributions.",
+  "type": "object",
+  "required": ["weights", "accept_threshold", "version"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "string" },
+    "weights": {
+      "type": "object",
+      "patternProperties": {
+        "^[A-Z_]+$": { "type": "number", "minimum": 0.0 }
+      },
+      "additionalProperties": false
+    },
+    "accept_threshold": { "type": "number", "minimum": 0.0, "maximum": 100.0 },
+    "conflict_rr_threshold": { "type": "number", "minimum": 0.0 },
+    "min_contributions": { "type": "integer", "minimum": 1 },
+    "debug": { "type": "object", "additionalProperties": true }
+  },
+  "examples": [
+    {
+      "version": "fusion_plan_v1",
+      "weights": { "SCALP": 0.5, "DAY": 1.0, "SWING": 1.5 },
+      "accept_threshold": 55.0,
+      "conflict_rr_threshold": 0.3,
+      "min_contributions": 1
+    }
+  ]
+}

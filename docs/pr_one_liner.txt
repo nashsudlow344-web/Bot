@@ -1,0 +1,1 @@
+Harden OHLC dedupe & indicator stability; add env-driven AggregatorConfig, stress tests, PR/issue helpers, and scope CI mypy to hardened modules

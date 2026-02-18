@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.local/schemas/summarize_news.schema.json",
+  "title": "SummarizeNews",
+  "description": "Schema for article analysis / news summarization used by the monitoring module.",
+  "type": "object",
+  "required": ["article_id", "analysis_ts_ms", "sentiment_score", "relevance_score", "summary"],
+  "additionalProperties": false,
+  "properties": {
+    "article_id": { "type": "string" },
+    "analysis_ts_ms": { "type": "integer", "minimum": 0 },
+    "sentiment_score": { "type": "number", "minimum": -1.0, "maximum": 1.0, "description": "Normalized sentiment -1 (very negative) to +1 (very positive)." },
+    "relevance_score": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+    "summary": { "type": "string", "maxLength": 4000 },
+    "entities": { "type": "array", "items": { "type": "string" } },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "model_version": { "type": "string" },
+    "impact_class": { "type": "string", "enum": ["none", "minor", "major", "market-moving"], "description": "Classifier for automation suppression logic." }
+  },
+  "examples": [
+    {
+      "article_id": "art-20260101-0001",
+      "analysis_ts_ms": 1700001000000,
+      "sentiment_score": -0.65,
+      "relevance_score": 0.87,
+      "summary": "Company X announced an unexpected profit warning citing supply chain issues; CEO resigned.",
+      "entities": ["Company X", "CEO"],
+      "impact_class": "major",
+      "model_version": "news_v1"
+    }
+  ]
+}

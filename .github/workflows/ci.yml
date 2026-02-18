@@ -1,0 +1,96 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - work
+  pull_request:
+
+jobs:
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip (runtime deps)
+        id: cache-runtime
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/pip/wheels
+          key: ${{ runner.os }}-pip-prod-${{ hashFiles('requirements.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-prod-
+
+      - name: Cache status (runtime)
+        run: echo "runtime cache hit=${{ steps.cache-runtime.outputs.cache-hit }}"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install --require-hashes -r requirements.lock
+
+      - name: Show installed packages
+        run: pip freeze
+
+      - name: Run tests
+        run: pytest -q
+
+  lint:
+    name: Lint & Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip (dev deps)
+        id: cache-dev
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/pip/wheels
+          key: ${{ runner.os }}-pip-dev-${{ hashFiles('requirements-dev.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-dev-
+
+      - name: Cache status (dev)
+        run: echo "dev cache hit=${{ steps.cache-dev.outputs.cache-hit }}"
+
+      - name: Install dev dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install --require-hashes -r requirements-dev.lock
+
+      - name: Show installed packages
+        run: pip freeze
+
+      - name: Ruff (lint)
+        run: ruff check .
+
+      - name: Black (format check)
+        run: black --check .
+
+      - name: isort (import order check)
+        run: isort --check-only .
+
+      - name: mypy (type check)
+        run: |
+          mypy --follow-imports=skip \
+               services/event_store/simple_bus.py \
+               services/ohlcv \
+               services/indicators
